@@ -52,8 +52,10 @@ function TaskName({
 function Clock(props: PomodoroConfig) {
 	const {duration, breakTime} = props;
 	const {timer} = useClock({duration, breakTime});
-	const paddedMinutes = timer.min.toString().padStart(2, '0');
-	const paddedSeconds = timer.sec.toString().padStart(2, '0');
+	const min = Math.floor(timer / 60);
+	const secs = timer - min * 60;
+	const paddedMinutes = min.toString().padStart(2, '0');
+	const paddedSeconds = secs.toString().padStart(2, '0');
 	const displayTimerText = `${paddedMinutes}:${paddedSeconds}`;
 	return (
 		<Box>
@@ -78,16 +80,7 @@ export default function App(props: PomodoroConfig) {
 	});
 	return (
 		<>
-			<Text color={'green'}>
-				You will be starting a session for{' '}
-				<Text color={'cyanBright'}>{duration}</Text> minutes
-			</Text>
-			<Text color={'green'}>
-				Your break time will be for{' '}
-				<Text color={'cyanBright'}>{breakTime} </Text>
-				minutes
-			</Text>
-			<Clock {...props} />
+			<Clock duration={duration} breakTime={breakTime} />
 			{/*<TaskName query={query} onChange={setQuery} />*/}
 		</>
 	);

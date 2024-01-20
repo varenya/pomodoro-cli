@@ -9,31 +9,18 @@ type MilliSeconds = {ms: number};
 
 type DisplayTime = {min: number; sec: number};
 
-function minToMilliSeconds(time: Minutes): MilliSeconds {
-	const milliSeconds = time.min * MIN * SECONDS * MILLI_SECS;
-	return {ms: milliSeconds};
-}
-function updateTimer(displayTime: DisplayTime): DisplayTime {
-	const {min, sec} = displayTime;
-	const initialSeconds = sec % SECONDS;
-	const newSeconds = initialSeconds === 0 ? 59 : sec - 1;
-	const newMin = initialSeconds === 0 ? min - 1 : min;
-
-	return newMin === -1
-		? {...displayTime, sec: newSeconds % SECONDS}
-		: {...displayTime, sec: newSeconds % SECONDS, min: newMin};
-}
 function useClock({duration}: {duration: number; breakTime: number}) {
 	const initial: DisplayTime = {min: duration, sec: 0};
-	const [timer, setTimer] = useState(initial);
+	const taskDuration = 25 * duration * SECONDS;
+	const [timer, setTimer] = useState(taskDuration);
 	const intervalId = useRef<NodeJS.Timeout | undefined>();
-	if (timer.min === 0 && timer.sec === 0) {
+	if (timer === 0) {
 		clearInterval(intervalId.current);
 	}
 	useEffect(() => {
-		intervalId.current = setInterval(updateTime, MILLI_SECS);
+		intervalId.current = setInterval(updateTime, 1000);
 		function updateTime() {
-			setTimer(updateTimer);
+			setTimer(taskDuration => taskDuration - 1);
 		}
 		return () => clearInterval(intervalId.current);
 	}, []);
